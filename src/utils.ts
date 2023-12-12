@@ -10,3 +10,16 @@ export const gcd = (a: number, b: number): number => {
 }
 
 export const lcm = (a: number, b: number) => (a * b) / gcd(a, b)
+
+export const memoize = <Args extends unknown[], Result>(
+    func: (...args: Args) => Result
+): (...args: Args) => Result => {
+    const cache = new Map<string, Result>()
+    return (...args) => {
+        const key = JSON.stringify(args)
+        if (!cache.has(key)) {
+            cache.set(key, func(...args))
+        }
+        return cache.get(key)!
+    }
+}
