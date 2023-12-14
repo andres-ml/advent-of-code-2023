@@ -23,3 +23,10 @@ export const memoize = <Args extends unknown[], Result>(
         return cache.get(key)!
     }
 }
+
+export const iterateN = <T>(times: number, callable: (arg: T) => T, input: T) => {
+    for (let i = 0; i < times; ++i) {
+        input = callable(input)
+    }
+    return input
+}
