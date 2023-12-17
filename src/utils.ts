@@ -30,3 +30,23 @@ export const iterateN = <T>(times: number, callable: (arg: T) => T, input: T) =>
     }
     return input
 }
+
+export class CustomMap<Key, Value>
+{
+    private keyFunction: (key: Key) => string
+    private map: Map<string, Value>
+  
+    constructor(keyFunction: (key: Key) => string) {
+        this.keyFunction = keyFunction
+        this.map = new Map()
+    }
+  
+    set(key: Key, value: Value): void {
+        this.map.set(this.keyFunction(key), value)
+    }
+  
+    get(key: Key): Value | undefined {
+        return this.map.get(this.keyFunction(key))
+    }
+
+}
