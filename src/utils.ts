@@ -1,3 +1,5 @@
+import { clamp } from "ramda"
+
 export const matchAllGroups = (regex: string, string: string) => [...string.matchAll(new RegExp(regex, 'g'))]
 
 export const matchAll = (regex: string, string: string) => matchAllGroups(regex, string).map(match => match[0])
@@ -47,6 +49,45 @@ export class CustomMap<Key, Value>
   
     get(key: Key): Value | undefined {
         return this.map.get(this.keyFunction(key))
+    }
+
+}
+
+type Position = [number, number]
+
+export class Coordinate {
+    public position: Position;
+    
+    constructor(position: Position) {
+        this.position = position
+    }
+
+    move(direction: string, length = 1) {
+        direction = direction.toUpperCase()
+        if (['U', 'N', 'UP', '^'].includes(direction)) {
+            this.position[0] += -length
+        }
+        if (['L', 'W', 'LEFT', '<'].includes(direction)) {
+            this.position[1] += -length
+        }
+        if (['R', 'E', 'RIGHT', '>'].includes(direction)) {
+            this.position[1] += length
+        }
+        if (['S', 'D', 'SOUTH', 'v'].includes(direction)) {
+            this.position[0] += length
+        }
+    }
+
+    clamp(grid: unknown[][]) {
+        this.position[0] = clamp(0, grid.length, this.position[0])
+        this.position[1] = clamp(0, grid[0]?.length ?? 0, this.position[0])
+    }
+
+    isWithinBounds(grid: unknown[][]) {
+        return this.position[0] >= 0
+            && this.position[1] >= 0
+            && this.position[0] < grid.length
+            && this.position[1] < grid[0].length
     }
 
 }
