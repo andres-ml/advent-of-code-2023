@@ -67,6 +67,8 @@ const count = (steps: number) => (visitable: any) => [...visitable.map.values()]
 // this solution relies on the empty cross of user inputs
 const solve2 = (steps: number) => (garden: Garden) => {
     const remainder = steps % garden.grid.length
+    const expansions = (steps - remainder) / garden.grid.length
+    const normal = analyze(garden)
     const NN = analyze({ grid: garden.grid, start: [0, remainder] })
     const EE = analyze({ grid: garden.grid, start: [remainder, remainder * 2] })
     const SS = analyze({ grid: garden.grid, start: [remainder * 2, remainder] })
@@ -75,8 +77,6 @@ const solve2 = (steps: number) => (garden: Garden) => {
     const NE = analyze({ grid: garden.grid, start: [0, remainder * 2] })
     const SE = analyze({ grid: garden.grid, start: [remainder * 2, remainder * 2] })
     const SW = analyze({ grid: garden.grid, start: [remainder * 2, 0] })
-    const expansions = (steps - remainder) / garden.grid.length
-    const normal = analyze(garden)
     const items = [
         // rhombus points
         [1, count(garden.grid.length - 1)(NN)],
@@ -98,7 +98,7 @@ const solve2 = (steps: number) => (garden: Garden) => {
         // filling, odd parity
         [Math.pow(expansions - 1, 2), count(steps)(normal)],
     ]
-    return items.reduce((a, [c, n]) => a + c * n, 0)
+    return items.reduce((carry, [times, count]) => carry + times * count, 0)
 }
 
 export default {
