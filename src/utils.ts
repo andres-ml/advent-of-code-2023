@@ -36,7 +36,7 @@ export const iterateN = <T>(times: number, callable: (arg: T) => T, input: T) =>
 export class CustomMap<Key, Value>
 {
     private keyFunction: (key: Key) => string
-    private map: Map<string, Value>
+    public map: Map<string, Value>
   
     constructor(keyFunction: (key: Key) => string) {
         this.keyFunction = keyFunction
@@ -49,6 +49,10 @@ export class CustomMap<Key, Value>
   
     get(key: Key): Value | undefined {
         return this.map.get(this.keyFunction(key))
+    }
+
+    has(key: Key): boolean {
+        return this.map.has(this.keyFunction(key))
     }
 
 }
@@ -73,14 +77,16 @@ export class Coordinate {
         if (['R', 'E', 'RIGHT', '>'].includes(direction)) {
             this.position[1] += length
         }
-        if (['S', 'D', 'SOUTH', 'v'].includes(direction)) {
+        if (['S', 'D', 'DOWN', 'v'].includes(direction)) {
             this.position[0] += length
         }
+        return this
     }
 
     clamp(grid: unknown[][]) {
         this.position[0] = clamp(0, grid.length, this.position[0])
         this.position[1] = clamp(0, grid[0]?.length ?? 0, this.position[0])
+        return this
     }
 
     isWithinBounds(grid: unknown[][]) {
