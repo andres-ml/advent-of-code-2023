@@ -36,10 +36,15 @@ export const iterateN = <T>(times: number, callable: (arg: T) => T, input: T) =>
 export class CustomMap<Key, Value>
 {
     private keyFunction: (key: Key) => string
+    private reverseKeyFunction: ((key: string) => Key) | undefined
     public map: Map<string, Value>
   
-    constructor(keyFunction: (key: Key) => string) {
+    constructor(
+        keyFunction: (key: Key) => string,
+        reverseKeyFunction: ((key: string) => Key )| undefined = undefined,
+    ) {
         this.keyFunction = keyFunction
+        this.reverseKeyFunction = reverseKeyFunction
         this.map = new Map()
     }
   
@@ -55,6 +60,14 @@ export class CustomMap<Key, Value>
         return this.map.has(this.keyFunction(key))
     }
 
+    keys(): Key[] {
+        return [...this.map.keys()].map(this.reverseKeyFunction!)
+    }
+
+    entries(): [Key, Value][] {
+        return this.keys().map(key => [key, this.get(key)]) as [Key, Value][]
+    }
+
 }
 
 type Position = [number, number]
@@ -63,7 +76,7 @@ export class Coordinate {
     public position: Position;
     
     constructor(position: Position) {
-        this.position = position
+        this.position = position.slice() as Position
     }
 
     move(direction: string, length = 1) {
@@ -77,10 +90,19 @@ export class Coordinate {
         if (['R', 'E', 'RIGHT', '>'].includes(direction)) {
             this.position[1] += length
         }
-        if (['S', 'D', 'DOWN', 'v'].includes(direction)) {
+        if (['S', 'D', 'DOWN', 'V'].includes(direction)) {
             this.position[0] += length
         }
         return this
+    }
+
+    explore() {
+        return [
+            new Coordinate(this.position).move('UP'),
+            new Coordinate(this.position).move('DOWN'),
+            new Coordinate(this.position).move('LEFT'),
+            new Coordinate(this.position).move('RIGHT'),
+        ]
     }
 
     clamp(grid: unknown[][]) {
